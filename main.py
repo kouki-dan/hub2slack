@@ -13,6 +13,7 @@ def post_to_slack(tag, pusher, repo_name, repo_url, webhook_url):
 			"title": "{repo_name}の新しいビルドです",
 			"title_link": "{repo_url}",
 			"color": "#3498db",
+			"footer": "Posted by <https://github.com/kouki-dan/hub2slack|hub2slack>",
 			"fields": [
 				{{
                         "title": "タグ",

@@ -1,10 +1,11 @@
 
 from unittest.mock import patch, MagicMock
 
+import pytest
 from aiohttp.test_utils import AioHTTPTestCase, unittest_run_loop
 from aiohttp import web
 
-from main import get_app
+from main import get_app, post_to_slack
 
 
 hub_payload = """{
@@ -60,4 +61,15 @@ class MyAppTestCase(AioHTTPTestCase):
         assert resp.status == 200
         text = await resp.text()
         assert "OK" in text
+
+    def test_slack_message_should_parse_to_json(self):
+        with patch("main.requests") as mock:
+            post_to_slack("tag", "pusher", "reponame", "repourl", "hookurl")
+            assert "hookurl" == mock.post.call_args[0][0]
+            data = mock.post.call_args[1]["data"]["payload"]
+            import json
+            try:
+                json.loads(data)
+            except json.decoder.JSONDecodeError:
+                pytest.fail("Payload cannot be parsed")
 
